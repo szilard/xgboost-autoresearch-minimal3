@@ -184,7 +184,7 @@ The experiment runs on a dedicated branch (e.g. `mar5`).
 
 LOOP until the time budget is used up:
 
-1. Check the clock: `python3 harness.py status`. If it prints `TIME IS UP`, or the remaining time is too short for another experiment, stop the loop and wrap up (see **Time budget**). Otherwise look at the git state: the current branch/commit we're on
+1. Check the clock: `python3 harness.py status`. If it prints `TIME IS UP`, or less than 2 minutes remain, stop the loop and wrap up (see **Time budget**). Otherwise look at the git state: the current branch/commit we're on
 2. **Choose your next experiment deliberately.** Before touching any code:
    - Review `output/results.tsv` and recent commits.
    - State a short **hypothesis**: what you are changing, why you think it will help, and (if applicable) which prior result motivates this step.
@@ -209,7 +209,7 @@ The idea is that you are a completely autonomous researcher trying things out. I
 
 **Time budget**: You have 2 hours of wall-clock time from `python3 harness.py start`, counting everything: thinking, research, editing and runs. Within the budget, do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to keep working until the budget is used up. You are autonomous. If you run out of ideas, think harder - read papers and documentation, re-read the in-scope files for new angles, try combining previous near-misses, try more radical changes to the features or the model setup.
 
-When `python3 harness.py status` (or `python3 harness.py run`) prints `TIME IS UP`, or the remaining time is too short for another experiment (your thinking, the edit and the run), do not start new experiments. Wrap up:
+When `python3 harness.py status` (or `python3 harness.py run`) prints `TIME IS UP`, or less than 2 minutes remain (too short for another experiment: your thinking, the edit and the run), do not start new experiments. Wrap up:
 
 1. Make sure the last experiment is logged in `output/results.tsv` and the branch is at the best kept commit.
 2. Add a final summary to `output/research-log.md`: best Eval AUC and its commit, what worked, what did not, and what you would try next.
