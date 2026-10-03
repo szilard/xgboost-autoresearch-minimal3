@@ -2,6 +2,8 @@
 
 This is an experiment to have an AI/LLM agent conduct autonomous research in optimizing (tuning) XGBoost on a given dataset.
 
+**The task:** predict whether a flight departs 15 or more minutes late (`dep_delayed_15min`, Y/N) from what is known in advance: month, day of month, day of week, scheduled departure time, carrier, origin, destination and distance. The metric is AUC. `data/train.csv` has 200K rows sampled from 2005 flights and `data/eval.csv` has 50K rows from 2006; both are balanced (half delayed, half not). You optimize the AUC on `eval.csv`; after the run the human checks your models on a held-out test set that you never see.
+
 ## Setup
 
 To set up a new experiment, work with the user to:
@@ -9,7 +11,6 @@ To set up a new experiment, work with the user to:
 1. **Agree on a run tag**: propose a tag based on today's date (e.g. `mar5`). The branch `<tag>` must not already exist - this is a fresh run.
 2. **Create the branch**: `git checkout -b <tag>`. Do this directly — do NOT run git checkout main or switch branches first. Branch from whatever HEAD is currently at.
 3. **Read the in-scope files**: The repo is small. Read these files for full context:
-   - `README-autoresearch.md` - repository context.
    - `train.py` - the file you modify. Data preparation, feature engineering, choosing hyperparameters and model training.
    - `harness.py` - runs and times the experiments, keeps the 2-hour experiment clock, saves the trained model and `prepare` to `artifacts/` and scores `eval.csv` row by row. Do not modify.
 4. **Verify data exists**: Check that `data/` contains `train.csv` and `eval.csv`. If not, tell the human.
