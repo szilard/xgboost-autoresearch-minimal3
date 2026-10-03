@@ -10,7 +10,7 @@ To set up a new experiment, work with the user to:
 2. **Create the branch**: `git checkout -b <tag>`. Do this directly — do NOT run git checkout main or switch branches first. Branch from whatever HEAD is currently at.
 3. **Read the in-scope files**: The repo is small. Read these files for full context:
    - `README-autoresearch.md` - repository context.
-   - `train.py` - the file you modify. Data preparation, feature engineering, choosing hyperparameters and model training (with possible early stopping etc.).
+   - `train.py` - the file you modify. Data preparation, feature engineering, choosing hyperparameters and model training.
    - `harness.py` - runs and times the experiments, keeps the 2-hour experiment clock, saves the trained model and `prepare` to `artifacts/` and scores `eval.csv` row by row. Do not modify.
 4. **Verify data exists**: Check that `data/` contains `train.csv` and `eval.csv`. If not, tell the human.
 5. **Initialize results.tsv**: Create `results.tsv` with just the header row. The baseline will be recorded after the first run.
@@ -62,7 +62,7 @@ You are expected to actively search the web and read external resources througho
 
 **Important:** Research time does not count against the per-run time limits (it does count against the 2-hour time budget). Take as long as you need to read and understand a resource before designing your next experiment. A well-researched experiment is worth more than three random ones.
 
-**The goal is simple: get the highest AUC.** Everything is fair game that will lead to a model that generalizes on unseen data: data preparation, feature engineering, choosing hyperparameters, and model training. Read XGBoost documentation online, search the web for how to tune XGBoost. Try out adding new elements such as early stopping. Be creative! Beyond the rules above, the only constraint is that the code runs without crashing and stays within the time limits (see **Timeout**).
+**The goal is simple: get the highest AUC.** Everything is fair game that will lead to a model that generalizes on unseen data: data preparation, feature engineering, choosing hyperparameters, and model training. Read XGBoost documentation online, search the web for how to tune XGBoost. Be creative! Beyond the rules above, the only constraint is that the code runs without crashing and stays within the time limits (see **Timeout**).
 
 **Simplicity criterion**: All else being equal, simpler is better. A small improvement that adds ugly complexity is not worth it. Conversely, removing something and getting equal or better results is a great outcome - that's a simplification win. When evaluating whether to keep a change, weigh the complexity cost against the improvement magnitude. A 0.001 AUC improvement that adds 20 lines of hacky code? Probably not worth it. A 0.001 AUC improvement from deleting code? Definitely keep. An improvement of ~0 but much simpler code? Keep.
 
