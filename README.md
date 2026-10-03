@@ -52,7 +52,7 @@ After the setup the agent starts the clock (`python3 harness.py start`), runs ex
 
 ```bash
 python3 harness.py report            # total time, split into XGBoost training / evaluation vs the AI
-./human/score_holdout_all.sh       # holdout AUC of every kept experiment -> output/holdout_scores.tsv
+./human/score_holdout_all.sh         # holdout AUC of every kept experiment -> output/holdout_scores.tsv
 python3 human/plot_auc_history.py    # eval vs holdout AUC -> output/auc_history.png
 ```
 
