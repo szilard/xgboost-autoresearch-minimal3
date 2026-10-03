@@ -7,9 +7,9 @@ This is a follow-up to [xgboost-autoresearch](https://github.com/szilard/xgboost
 How a run works (the agent's instructions are in `program.md`):
 
 - **Task:** predict whether a flight departs 15+ minutes late (airline data, balanced, 200K train rows from 2005 / 50K eval and 50K holdout rows from 2006), measured by AUC. The agent optimizes AUC on the eval set; the holdout set is scored only after the run.
-- **Loop:** for a fixed 2-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved or resets it otherwise. It also researches ideas on the web and logs every experiment in `results.tsv` and `research-log.md`.
-- **Guardrails:** `harness.py` enforces time limits (1 min training, 5 min evaluation per run). Evaluation calls the agent's feature code on one row at a time, so features computed across rows (counts, group means) don't carry over to scoring. The holdout set and the scripts that score it are off-limits to the agent.
-- **Ground truth:** after the run, you score every kept model on the holdout set to check that the eval AUC gains generalize (`groundtruth_all.tsv`, `auc_history.png`).
+- **Loop:** for a fixed 2-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved or resets it otherwise. It also researches ideas on the web and logs every experiment in `output/results.tsv` and `output/research-log.md`.
+- **Guardrails:** `harness.py` enforces time limits (1 min training, 5 min evaluation per run). Evaluation calls the agent's feature code on one row at a time, so features computed across rows (counts, group means) don't carry over to scoring. The holdout set and the human-only scripts in `human/` (data prep, holdout scoring) are off-limits to the agent.
+- **Ground truth:** after the run, you score every kept model on the holdout set to check that the eval AUC gains generalize (`output/groundtruth_all.tsv`, `output/auc_history.png`).
 
 To run repeated trials with various agents/LLMs, use an orchestrator such as
 [xgboost-autoresearch-minimal3-runs](https://github.com/szilard/xgboost-autoresearch-minimal3-runs).

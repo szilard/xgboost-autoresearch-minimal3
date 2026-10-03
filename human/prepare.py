@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-data_dir = Path(__file__).parent / "data"
+data_dir = Path(__file__).parent.parent / "data"
 # source data, read straight from S3 (not stored locally): train is sampled from 2005,
 # eval and holdout from 2006
 source_url = "https://xgboost-autoresearch--airline-dataset.s3.us-west-2.amazonaws.com/{year}.csv"

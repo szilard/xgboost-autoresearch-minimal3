@@ -5,7 +5,7 @@ which stores `prepare` by value together with every module-level lookup it uses
 (cat_levels etc.), so it can be scored later without train.py or the training data.
 Artifacts live in the gitignored artifacts/ folder, named by full commit hash.
 
-It also keeps the experiment clock and times every run (timing/ folder, not gitignored:
+It also keeps the experiment clock and times every run (output/timing/ folder, not gitignored:
 the human archives or deletes it after a run):
 
     python3 harness.py start    # start the clock (at "go", after the setup)
@@ -36,7 +36,7 @@ from sklearn.metrics import roc_auc_score
 repo_dir = Path(__file__).parent
 data_dir = repo_dir / "data"
 artifacts_dir = repo_dir / "artifacts"
-timing_dir = repo_dir / "timing"
+timing_dir = repo_dir / "output" / "timing"
 clock_file = timing_dir / "clock.json"
 runs_file = timing_dir / "runs.tsv"
 n_workers = os.cpu_count()
@@ -128,7 +128,7 @@ def elapsed(clock):
 
 
 def cmd_start():
-    timing_dir.mkdir(exist_ok=True)
+    timing_dir.mkdir(parents=True, exist_ok=True)
     clock_file.write_text(json.dumps({"start": time.time()}))
     print(f"Clock started, time budget {fmt(time_budget_s)}")
 

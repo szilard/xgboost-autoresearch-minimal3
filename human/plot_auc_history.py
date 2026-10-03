@@ -3,8 +3,8 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 
-repo_dir = Path(__file__).parent
-df = pd.read_csv(repo_dir / "groundtruth_all.tsv", sep="\t")
+output_dir = Path(__file__).parent.parent / "output"
+df = pd.read_csv(output_dir / "groundtruth_all.tsv", sep="\t")
 df.insert(0, " n ", range(1, len(df) + 1))
 df.columns = df.columns.str.strip()
 
@@ -26,7 +26,7 @@ plt.title("AUC vs n")
 plt.grid(True, color="lightgrey", linewidth=0.5)
 plt.legend()
 plt.tight_layout()
-plt.savefig(repo_dir / "auc_history.png", dpi=150)
+plt.savefig(output_dir / "auc_history.png", dpi=150)
 plt.show()
 
 for col in ["eval_auc", "holdout_auc"]:

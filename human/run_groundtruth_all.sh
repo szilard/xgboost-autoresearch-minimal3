@@ -1,30 +1,30 @@
 #!/bin/bash
 #
-# Evaluate every kept experiment in results.tsv against the ground truth holdout set.
+# Evaluate every kept experiment in output/results.tsv against the ground truth holdout set.
 #
 # Scores the saved artifact (model + prepare) of each commit from artifacts/,
 # so nothing is retrained and the repo is never modified.
 #
 # Usage:
-#   ./run_groundtruth_all.sh [results.tsv] [output.tsv] [timeout_seconds]
+#   ./human/run_groundtruth_all.sh [results.tsv] [output.tsv] [timeout_seconds]
 #
 # Defaults:
-#   results.tsv      -> results.tsv in the repo root
-#   output.tsv       -> groundtruth_all.tsv in the repo root
+#   results.tsv      -> output/results.tsv
+#   output.tsv       -> output/groundtruth_all.tsv
 #   timeout_seconds  -> 3000
 #
 # Prerequisites:
 #   - results.tsv must exist with columns: commit, Eval_AUC, status, description
-#   - check_groundtruth.py and harness.py must exist in the repo root
+#   - human/check_groundtruth.py and harness.py (repo root) must exist
 #   - The virtual environment (if any) should be activated before running
 #
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
-RESULTS_INPUT="${1:-results.tsv}"
-OUTPUT_FILE="${2:-groundtruth_all.tsv}"
+RESULTS_INPUT="${1:-output/results.tsv}"
+OUTPUT_FILE="${2:-output/groundtruth_all.tsv}"
 TIMEOUT="${3:-3000}"
 
 if [ ! -f "$RESULTS_INPUT" ]; then
@@ -56,7 +56,7 @@ while IFS=$'\t' read -r commit eval_auc status description; do
 
   GT_LOG=$(mktemp)
   EXIT_CODE=0
-  timeout "$TIMEOUT" python3 check_groundtruth.py "$commit" > "$GT_LOG" 2>&1 || EXIT_CODE=$?
+  timeout "$TIMEOUT" python3 human/check_groundtruth.py "$commit" > "$GT_LOG" 2>&1 || EXIT_CODE=$?
   if [ "$EXIT_CODE" -ne 0 ]; then
     [ "$EXIT_CODE" -eq 124 ] && echo "  TIMEOUT: exceeded ${TIMEOUT}s" || echo "  CRASH: exit code $EXIT_CODE"
     tail -5 "$GT_LOG" 2>/dev/null || true

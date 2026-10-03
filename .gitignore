@@ -1,12 +1,7 @@
 data/*
 !data/.gitkeep
 artifacts/
-#timing/
-run.log
-#results.tsv
-#groundtruth_all.tsv
-#auc_history.png
-#research-log.md
+#output/
 
 
 # Python
