@@ -12,7 +12,7 @@ How a run works (the agent's instructions are in `program.md`):
 - **Ground truth:** after the run, you score every kept model on the holdout set to check that the eval AUC gains generalize (`groundtruth_all.tsv`, `auc_history.png`).
 
 To run repeated trials with various agents/LLMs, use an orchestrator such as
-[xgboost-autoresearch-minimal2-runs](https://github.com/szilard/xgboost-autoresearch-minimal2-runs).
+[xgboost-autoresearch-minimal3-runs](https://github.com/szilard/xgboost-autoresearch-minimal3-runs).
 
 Recommended machine: m8i.2xlarge (8 cores, 32 GB RAM). The per-run time limits depend on the hardware, so compare results only across runs on the same machine type.
 
