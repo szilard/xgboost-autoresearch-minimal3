@@ -8,7 +8,7 @@ The idea: give an AI agent a small but real XGBoost training setup and let it ex
 
 The repo is deliberately kept small:
 
-- **`prepare.py`** - builds train/eval/holdout.csv from the 2005 airline data, read straight from S3 (not stored locally). Human only; the AI agent must not read it.
+- **`prepare.py`** - builds train.csv from the 2005 airline data and eval/holdout.csv from the 2006 data, read straight from S3 (not stored locally). Human only; the AI agent must not read it.
 - **`train.py`** - the single code file the agent edits (besides its own `results.tsv` and `research-log.md`). Contains the XGBoost model training. Everything is fair game that will lead to a model that generalizes on unseen data: data preparation, feature engineering, choosing hyperparameters, and model training. **This file is edited and iterated on by the agent**.
 - **`program.md`** - baseline instructions for one agent. Point your agent here and let it go. **This file is edited and iterated on by the human**.
 - **`harness.py`** - runs and times the experiments (`python3 harness.py run`), keeps the 2-hour experiment clock (`start`/`status`/`stop`), saves the trained model and `prepare` to `artifacts/<commit>.pkl` (gitignored) and scores `eval.csv` row by row. Not modified by the AI agent.
@@ -22,7 +22,7 @@ The repo is deliberately kept small:
 # 1. Install dependencies
 pip install pandas xgboost scikit-learn cloudpickle matplotlib --break-system-packages
 
-# 2. Build train/eval/holdout.csv from the 2005 airline data on S3
+# 2. Build train.csv (2005) and eval/holdout.csv (2006) from the airline data on S3
 python3 prepare.py
 
 # 3. Manually run a single training experiment (to verify everything works)
