@@ -74,7 +74,7 @@ human/                 - human-only tools, off-limits to the AI agent
   check_groundtruth.py   - holdout scoring of a saved artifact
   run_groundtruth_all.sh - holdout scoring of all kept experiments
   plot_auc_history.py    - plot of eval vs holdout AUC
-data/                  - train/eval/holdout.csv splits (gitignored)
+data/                  - train/eval/holdout.csv splits, created by human/prepare.py (gitignored)
 artifacts/             - saved model + prepare per commit, artifacts/<commit>.pkl (gitignored)
 output/                - outputs of the current run: results.tsv, research-log.md, run.log, timing/ (experiment clock and
                          per-run timings), groundtruth_all.tsv, auc_history.png (not gitignored, the human moves it to

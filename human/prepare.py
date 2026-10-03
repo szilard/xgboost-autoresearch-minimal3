@@ -49,6 +49,7 @@ neg, pos = sample_balanced(load(test_year), 50_000)
 df_eval = shuffle(neg.iloc[:25_000], pos.iloc[:25_000])
 df_holdout = shuffle(neg.iloc[25_000:], pos.iloc[25_000:])
 
+data_dir.mkdir(exist_ok=True)
 for name, d in [("train", df_train), ("eval", df_eval), ("holdout", df_holdout)]:
     print(f"\n{name}: {d.shape}")
     print(d["dep_delayed_15min"].value_counts().sort_index())
