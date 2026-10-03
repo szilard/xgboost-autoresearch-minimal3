@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 output_dir = Path(__file__).parent.parent / "output"
-df = pd.read_csv(output_dir / "groundtruth_all.tsv", sep="\t")
+df = pd.read_csv(output_dir / "holdout_scores.tsv", sep="\t")
 df.insert(0, " n ", range(1, len(df) + 1))
 df.columns = df.columns.str.strip()
 

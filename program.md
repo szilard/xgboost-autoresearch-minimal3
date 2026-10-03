@@ -2,7 +2,7 @@
 
 This is an experiment to have an AI/LLM agent conduct autonomous research in optimizing (tuning) XGBoost on a given dataset.
 
-**The task:** predict whether a flight departs 15 or more minutes late (`dep_delayed_15min`, Y/N) from what is known in advance: month, day of month, day of week, scheduled departure time, carrier, origin, destination and distance. The metric is AUC. `data/train.csv` has 200K rows sampled from 2005 flights and `data/eval.csv` has 50K rows from 2006; both are balanced (half delayed, half not). You optimize the AUC on `eval.csv`; after the run the human checks your models on a held-out test set that you never see.
+**The task:** predict whether a flight departs 15 or more minutes late (`dep_delayed_15min`, Y/N) from what is known in advance: month, day of month, day of week, scheduled departure time, carrier, origin, destination and distance. The metric is AUC. `data/train.csv` has 200K rows sampled from 2005 flights and `data/eval.csv` has 50K rows from 2006; both are balanced (half delayed, half not). You optimize the AUC on `eval.csv`; after the run the human checks your models on a holdout set that you never see.
 
 ## Setup
 
@@ -28,14 +28,14 @@ You launch an experiment as: `python3 harness.py run`. It runs `train.py`, times
 - Search the web and read external resources. This is not optional — you MUST do research before relying solely on your own intuition. See the **Research** section below.
 
 **What you CANNOT do:**
-- Do not read, run, or modify anything in the `human/` folder: it holds the human-only tools. `human/prepare.py` builds the data splits, including the held-out test set.
+- Do not read, run, or modify anything in the `human/` folder: it holds the human-only tools. `human/make_data.py` builds the data splits, including the holdout set.
 - Do not install new packages or add dependencies. You can only use what's already installed.
 - Do not change the evaluation. The final model is trained on `train.csv` and evaluated by the call `save_and_evaluate(model, prepare)` at the end of `train.py`, which must stay the last line. Do not add cross-validation, a retrain on more data, or any other evaluation of your own as the metric.
 - Do not modify the evaluation harness. Do not modify `harness.py`, and do not modify or delete anything in `artifacts/` or `output/timing/`.
-- Do not use any of the data files other than `train.csv`. Only `data/train.csv` may be read in `train.py`; `data/eval.csv` is read by `harness.py` for evaluation only. Never read, open, or inspect `data/holdout.csv` or the source data `2005.csv` and `2006.csv` (the latter contains the held-out rows) in any way, wherever they are stored. If you need a validation set (e.g. for early stopping), split it off `train.csv`. Note that `train.csv` is sampled from 2005 flights while `eval.csv` (and the held-out test set) is from 2006, so a validation split off `train.csv` overstates the AUC and can favour more complex models than the eval set does.
-- Do not read, run, or reference `human/check_groundtruth.py`, `human/run_groundtruth_all.sh` or `human/plot_auc_history.py`, and do not read their outputs `output/groundtruth_all.tsv` and `output/auc_history.png`. These are human-only tools for post-hoc evaluation of experiments against the held-out test set. They are never part of the experiment loop. If you find yourself wanting to use them, stop and tell the human immediately — it means something has gone wrong with your understanding of the task.
-- Do not use git to peek at earlier results, especially into earlier versions of `output/results.tsv`, `output/groundtruth_all.tsv` or any other .tsv, .txt or .png files with earlier results. 
-- Do not peek into results in the `results` folder and its sub-folders (archived earlier runs, including their ground truth scores).
+- Do not use any of the data files other than `train.csv`. Only `data/train.csv` may be read in `train.py`; `data/eval.csv` is read by `harness.py` for evaluation only. Never read, open, or inspect `data/holdout.csv` or the source data `2005.csv` and `2006.csv` (the latter contains the holdout rows) in any way, wherever they are stored. If you need a validation set (e.g. for early stopping), split it off `train.csv`. Note that `train.csv` is sampled from 2005 flights while `eval.csv` (and the holdout set) is from 2006, so a validation split off `train.csv` overstates the AUC and can favour more complex models than the eval set does.
+- Do not read, run, or reference `human/score_holdout.py`, `human/score_holdout_all.sh` or `human/plot_auc_history.py`, and do not read their outputs `output/holdout_scores.tsv` and `output/auc_history.png`. These are human-only tools for post-hoc evaluation of experiments against the holdout set. They are never part of the experiment loop. If you find yourself wanting to use them, stop and tell the human immediately — it means something has gone wrong with your understanding of the task.
+- Do not use git to peek at earlier results, especially into earlier versions of `output/results.tsv`, `output/holdout_scores.tsv` or any other .tsv, .txt or .png files with earlier results. 
+- Do not peek into results in the `results` folder and its sub-folders (archived earlier runs, including their holdout scores).
 
 
 ## Research
@@ -71,7 +71,7 @@ You are expected to actively search the web and read external resources througho
 
 ## Feature engineering
 
-**Important:** Keep all the feature engineering/data transformations in the `prepare(df)` function in `train.py`. `save_and_evaluate(model, prepare)` saves the fitted `model` together with `prepare` (and the module-level lookups it uses) to `artifacts/`, and the post-hoc ground truth evaluation scores that saved artifact without re-running `train.py`. So `prepare` must be self-contained: it may use module-level variables of `train.py` (lookups fitted on `train`) and imported libraries, but must not read files. The code should be like this:
+**Important:** Keep all the feature engineering/data transformations in the `prepare(df)` function in `train.py`. `save_and_evaluate(model, prepare)` saves the fitted `model` together with `prepare` (and the module-level lookups it uses) to `artifacts/`, and the post-hoc holdout evaluation scores that saved artifact without re-running `train.py`. So `prepare` must be self-contained: it may use module-level variables of `train.py` (lookups fitted on `train`) and imported libraries, but must not read files. The code should be like this:
 ```
 train = pd.read_csv(f"{data_dir}/train.csv")
 
@@ -93,7 +93,7 @@ model.fit(X_train, y_train)
 save_and_evaluate(model, prepare)
 ```
 
-**`prepare(df)` must compute each row's features from that row alone, plus lookups fitted on `train`.** `prepare(df)` is called here on the whole training set, but in evaluation (both `eval.csv` and the ground truth) it is called on **one row at a time**, and the prepared rows are then scored together in one batch. Any feature that aggregates over `df` itself therefore means something completely different in the two cases (in evaluation `df` is a single row) and will hurt your Eval AUC. Also keep `prepare` fast per call: it runs once per evaluation row, so a slow `prepare` can hit the 5-minute evaluation limit (the starter takes ~30s for the whole of `eval.csv`).
+**`prepare(df)` must compute each row's features from that row alone, plus lookups fitted on `train`.** `prepare(df)` is called here on the whole training set, but in evaluation (both `eval.csv` and the holdout set) it is called on **one row at a time**, and the prepared rows are then scored together in one batch. Any feature that aggregates over `df` itself therefore means something completely different in the two cases (in evaluation `df` is a single row) and will hurt your Eval AUC. Also keep `prepare` fast per call: it runs once per evaluation row, so a slow `prepare` can hit the 5-minute evaluation limit (the starter takes ~30s for the whole of `eval.csv`).
 
 Concretely, inside `prepare(df)` do NOT:
 
@@ -140,7 +140,7 @@ Run time: 32.6s (training 1.5s, eval 31.1s, ok)
 
 The status at the end of the last line is `ok`, `crash`, `timeout-training` or `timeout-eval` (a timeout is preceded by e.g. `TIMEOUT: training killed after 60s`).
 
-If it prints `WARNING: train.py has uncommitted changes, artifact not saved`, you ran it before committing; commit and run again, otherwise the experiment cannot be checked against the ground truth.
+If it prints `WARNING: train.py has uncommitted changes, artifact not saved`, you ran it before committing; commit and run again, otherwise the experiment cannot be scored on the holdout set.
 
 You can extract the key metric from the log file:
 

@@ -96,7 +96,7 @@ def save_and_evaluate(model, prepare):
     print(eval_marker, flush=True)
 
     blob = cloudpickle.dumps({"model": model, "prepare": prepare})
-    # score exactly what the ground truth evaluation will load, not the in-memory objects
+    # score exactly what the holdout evaluation will load, not the in-memory objects
     artifact = pickle.loads(blob)
 
     if git("status", "--porcelain", "--", "train.py"):

@@ -1,5 +1,5 @@
-# Ground truth: score a saved artifact on holdout.csv, row by row. Human only.
-# Usage: python3 human/check_groundtruth.py [commit]   (default: HEAD)
+# Score a saved artifact on holdout.csv, row by row. Human only.
+# Usage: python3 human/score_holdout.py [commit]   (default: HEAD)
 import sys
 import time
 from pathlib import Path
