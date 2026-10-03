@@ -194,11 +194,12 @@ LOOP until the time budget is used up:
 4. git commit `train.py` only (`results.tsv`, `research-log.md`, `run.log` and `timing/` stay uncommitted; the human archives or deletes them after the run)
 5. Run the experiment: `python3 harness.py run > run.log 2>&1` (redirect everything - do NOT use tee or let output flood your context). Run one experiment at a time.
 6. Read out the results: `grep "^Eval AUC:" run.log`
-7. If the grep output is empty, the run crashed or timed out (or the time budget is used up). Run `tail -n 50 run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up.
+7. If the grep output is empty, the run crashed or timed out (or the time budget is used up). Run `tail -n 50 run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up on that idea and move on.
 8. Record the results in the tsv (NOTE: do not commit the results.tsv file, leave it untracked by git)
 9. If Eval AUC improved (higher), or stayed about equal with simpler code (see the **Simplicity criterion**), you "advance" the branch, keeping the git commit
 10. Otherwise (Eval AUC equal or worse, without a simplification), you git reset back to where you started
 11. **Every 10 experiments**, pause and briefly synthesize what you have learned so far: what kinds of changes help, what kinds do not, what your current best theory is about what matters on this dataset, and what direction to try next. Write this synthesis as a short section in `research-log.md` to inform subsequent experiments.
+
 The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
 
 **Timeout**: `harness.py run` enforces two limits. Training - everything in `train.py` before the `save_and_evaluate(model, prepare)` call (startup, loading data, `prepare(train)`, fitting) - is killed after **1 minute**. Evaluation - saving the artifact and scoring `eval.csv` row by row - is killed after **5 minutes**. Treat a timeout as a failure (log it as `crash`, discard and revert). Do not print `Training done, evaluating...` yourself: it is the harness's signal that training is over.
