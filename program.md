@@ -129,12 +129,12 @@ Counts of rows in particular are not usable as features in this setup, in any fo
 Once the run finishes it prints a summary like this (the baseline `train.py`):
 
 ```
-Training time: 0.3s
+Training time: 0.7s
 Training done, evaluating...
-Artifact: artifacts/cc4d41fb286e4e6edde95798eb80427b186988e6.pkl (0.8 MB)
-Eval time: 30.8s
-Eval AUC: 0.7203
-Run time: 32.2s (training 1.1s, eval 31.1s, ok)
+Artifact: artifacts/8f4eaf5d0a561a99c106cae9576956d8022fb6f5.pkl (2.6 MB)
+Eval time: 30.9s
+Eval AUC: 0.6743
+Run time: 32.6s (training 1.5s, eval 31.1s, ok)
 ```
 
 The status at the end of the last line is `ok`, `crash`, `timeout-training` or `timeout-eval` (a timeout is preceded by e.g. `TIMEOUT: training killed after 60s`).
@@ -159,7 +159,7 @@ commit	Eval_AUC	status	description
 ```
 
 1. git commit hash (short, 7 chars)
-2. Eval AUC achieved (e.g. 0.7203) - use 0.0000 for crashes
+2. Eval AUC achieved (e.g. 0.6743) - use 0.0000 for crashes
 3. status: `keep`, `discard`, or `crash`
 4. short text description of what this experiment tried
 
@@ -167,8 +167,8 @@ Example:
 
 ```
 commit	Eval_AUC	status	description
-a1b2c3d	0.7203	keep	baseline
-b2c3d4e	0.7291	keep	increase number of trees
+a1b2c3d	0.6743	keep	baseline
+b2c3d4e	0.6831	keep	increase number of trees
 c3d4e5f	0.0000	crash	XGBoost OOM
 ```
 

@@ -16,4 +16,4 @@ To run repeated trials with various agents/LLMs, use an orchestrator such as
 
 Recommended machine: m8i.2xlarge (8 cores, 32 GB RAM). The per-run time limits depend on the hardware, so compare results only across runs on the same machine type.
 
-See [README-autoresearch.md](README-autoresearch.md) for setup and details, and `results/` for archived runs (e.g. [run1-test_v0.2](results/run1-test_v0.2/run-info.md)).
+See [README-autoresearch.md](README-autoresearch.md) for setup and details. Runs are archived in `results/`, one folder per run (none yet in this repo).
