@@ -18,6 +18,7 @@ First full 2-hour test run of this repo, done by hand (not through the orchestra
 ## Caveats
 
 - The run used the instructions as of `b261f5f`, before the strict keep rule (`884b806`) and the fixes of `316aa83`. Under the "simplicity criterion" in force then, 8 of the 34 kept commits have a slightly lower Eval AUC than the kept commit before them (by 0.0001-0.0006).
+- The run had a 2-hour budget; it has since been cut to 1 hour (`5a4ed1e`). At the 60-minute mark this run stood at Eval AUC 0.6899 and holdout AUC 0.6868 (81 runs), which is the figure to compare with later 1-hour runs.
 - Twice the agent logged a discard without resetting (`10cec75`, `661122e`), so the change stayed in later commits for a while. It found and corrected both; `661122e` remains in the branch history and is reverted by `8e0078d`.
 - The agent ran some read-only scratch commands on `train.csv`, which the instructions did not yet explicitly allow.
 - No leak check was run. By its own report the agent did not read `human/`, `data/holdout.csv` or `data/eval.csv`; this was not audited from its session log.
