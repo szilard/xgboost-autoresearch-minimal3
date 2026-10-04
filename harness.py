@@ -5,8 +5,8 @@ which stores `prepare` by value together with every module-level lookup it uses
 (cat_levels etc.), so it can be scored later without train.py or the training data.
 Artifacts live in the gitignored artifacts/ folder, named by full commit hash.
 
-It also keeps the experiment clock and times every run (output/timing/ folder, not gitignored:
-the human archives or deletes it after a run):
+It also keeps the experiment clock and times every run (output/timing/ folder, gitignored like
+the rest of output/; the human archives or deletes it after a run):
 
     python3 harness.py start    # start the clock (at "go", after the setup)
     python3 harness.py run      # run train.py: timed, killed if training exceeds

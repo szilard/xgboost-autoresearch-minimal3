@@ -77,7 +77,7 @@ human/                 - human-only tools, off-limits to the AI agent
 data/                  - train/eval/holdout.csv splits, created by human/make_data.py (gitignored)
 artifacts/             - saved model + prepare per commit, artifacts/<commit>.pkl (gitignored)
 output/                - outputs of the current run: results.tsv, research-log.md, run.log, timing/ (experiment clock and
-                         per-run timings), holdout_scores.tsv, auc_history.png (not gitignored, the human moves it to
+                         per-run timings), holdout_scores.tsv, auc_history.png (gitignored; the human moves it to
                          results/<run-name>/ or deletes it after a run)
 results/               - archived runs, one folder per run (human only)
 ```
