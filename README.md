@@ -11,7 +11,7 @@ The idea: give an AI agent a small but real XGBoost training setup and let it ex
 The agent's instructions are in `program.md`:
 
 - **Task:** predict whether a flight departs 15+ minutes late (airline data, balanced, 200K train rows from 2005 / 50K eval and 50K holdout rows from 2006), measured by AUC. The agent optimizes AUC on the eval set; the holdout set is scored only after the run.
-- **Loop:** for a fixed 1-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved (or is unchanged with simpler code) and resets it otherwise. It also researches ideas on the web and logs every experiment in `output/results.tsv` and `output/research-log.md`.
+- **Loop:** for a fixed 1-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved (or is unchanged with simpler or faster code) and resets it otherwise. It also researches ideas on the web and logs every experiment in `output/results.tsv` and `output/research-log.md`.
 - **Guardrails:** `harness.py` enforces time limits (1 min training, 5 min evaluation per run). Evaluation calls the agent's feature code on one row at a time, so features computed across rows (counts, group means) don't carry over to scoring. The holdout set and the human-only scripts in `human/` (data prep, holdout scoring) are off-limits to the agent.
 - **Holdout check:** after the run, you score every kept model on the holdout set to check that the eval AUC gains generalize (`output/holdout_scores.tsv`, `output/auc_history.png`).
 
