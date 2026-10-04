@@ -11,7 +11,7 @@ The idea: give an AI agent a small but real XGBoost training setup and let it ex
 The agent's instructions are in `program.md`:
 
 - **Task:** predict whether a flight departs 15+ minutes late (airline data, balanced, 200K train rows from 2005 / 50K eval and 50K holdout rows from 2006), measured by AUC. The agent optimizes AUC on the eval set; the holdout set is scored only after the run.
-- **Loop:** for a fixed 2-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved or resets it otherwise. It also researches ideas on the web and logs every experiment in `output/results.tsv` and `output/research-log.md`.
+- **Loop:** for a fixed 2-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved (or is unchanged with simpler code) and resets it otherwise. It also researches ideas on the web and logs every experiment in `output/results.tsv` and `output/research-log.md`.
 - **Guardrails:** `harness.py` enforces time limits (1 min training, 5 min evaluation per run). Evaluation calls the agent's feature code on one row at a time, so features computed across rows (counts, group means) don't carry over to scoring. The holdout set and the human-only scripts in `human/` (data prep, holdout scoring) are off-limits to the agent.
 - **Holdout check:** after the run, you score every kept model on the holdout set to check that the eval AUC gains generalize (`output/holdout_scores.tsv`, `output/auc_history.png`).
 
@@ -58,7 +58,7 @@ python3 human/plot_auc_history.py    # eval vs holdout AUC -> output/auc_history
 
 To score a single commit on the holdout set from its saved artifact (no retraining): `python3 human/score_holdout.py [commit]`.
 
-All of the run's outputs are in `output/` (`results.tsv`, `research-log.md`, `run.log`, `timing/`, `holdout_scores.tsv`, `auc_history.png`). You (the human, not the agent) archive it with `mkdir -p results && mv output results/<run-name>` (optionally adding the final `train.py` and selected artifacts) and commit it there, or delete it, so the next run starts clean. Runs are archived in `results/`, one folder per run (none yet in this repo).
+All of the run's outputs are in `output/` (`results.tsv`, `research-log.md`, `run.log`, `timing/`, `holdout_scores.tsv`, `auc_history.png`). You (the human, not the agent) archive it with `mkdir -p results && mv output results/<run-name>` (optionally adding the final `train.py` and selected artifacts) and commit it there, or delete it, so the next run starts clean. Runs are archived in `results/`, one folder per run (e.g. [test1](results/test1)).
 
 The timing works the same for any agent (Claude Code, Codex, ...): `harness.py` logs the wall-clock time of every run to `output/timing/runs.tsv`, and everything else between `start` and `stop` is the AI's time (token generation, tool calls, web research, API latency).
 

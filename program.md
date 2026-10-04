@@ -66,7 +66,7 @@ You are expected to actively search the web and read external resources througho
 
 **The goal is simple: get the highest AUC.** Everything is fair game that will lead to a model that generalizes on unseen data: data preparation, feature engineering, choosing hyperparameters, and model training. Read XGBoost documentation online, search the web for how to tune XGBoost. Be creative! Beyond the rules above, the only constraint is that the code runs without crashing and stays within the time limits (see **Timeout**).
 
-**Simplicity criterion**: All else being equal, simpler is better. A small improvement that adds ugly complexity is not worth it. Conversely, removing something and getting equal or better results is a great outcome - that's a simplification win. When evaluating whether to keep a change, weigh the complexity cost against the improvement magnitude. A 0.001 AUC improvement that adds 20 lines of hacky code? Probably not worth it. A 0.001 AUC improvement from deleting code? Definitely keep. An improvement of ~0 but much simpler code? Keep.
+**Keep rule**: Keep an experiment only if its Eval AUC, as printed by the harness (4 decimals), is higher than that of the last kept commit. If it is exactly equal, keep it only if the code is simpler or faster (a simplification or clean-up at no cost in AUC). If it is lower, discard it, however small the drop and however much simpler the code. All else being equal, simpler is better: removing something and getting an equal or better result is a great outcome.
 
 **The first run**: Your very first run should always be to establish the baseline, so you will run the training script as is.
 
@@ -198,8 +198,8 @@ LOOP until the time budget is used up:
 6. Read out the results: `grep "^Eval AUC:" output/run.log`
 7. If the grep output is empty, the run crashed or timed out (or the time budget is used up). Run `tail -n 50 output/run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up on that idea and move on.
 8. Record the results in the tsv (NOTE: do not commit the results.tsv file, leave it untracked by git)
-9. If Eval AUC improved (higher), or stayed about equal with simpler code (see the **Simplicity criterion**), you "advance" the branch, keeping the git commit
-10. Otherwise (Eval AUC equal or worse, without a simplification), you discard it: `git reset --hard <hash of the last kept commit>` (the untracked `output/` folder is not affected), then check with `git log --oneline -1` that HEAD is that last kept commit
+9. If Eval AUC improved (higher), or is exactly equal with simpler or faster code (see the **Keep rule**), you "advance" the branch, keeping the git commit
+10. Otherwise (Eval AUC lower, or equal without a simplification), you discard it: `git reset --hard <hash of the last kept commit>` (the untracked `output/` folder is not affected), then check with `git log --oneline -1` that HEAD is that last kept commit
 11. **Every 10 experiments** (not counting the baseline), pause and briefly synthesize what you have learned so far: what kinds of changes help, what kinds do not, what your current best theory is about what matters on this dataset, and what direction to try next. Write this synthesis as a short section in `output/research-log.md` to inform subsequent experiments.
 
 The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
