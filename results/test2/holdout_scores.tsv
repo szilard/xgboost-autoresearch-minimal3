@@ -1,0 +1,64 @@
+commit	status	description	eval_auc	holdout_auc
+c0880c0	keep	baseline	0.6743	0.6725
+374abf5	keep	ordinal Month/DayofMonth/DayOfWeek + Hour + DepMinutes	0.6754	0.6774
+99a9b2f	discard	drop DayofMonth	0.6735	N/A
+aa082be	keep	500 trees lr 0.03 subsample 0.8 colsample 0.8 min_child_weight 5	0.6817	0.6821
+5b54f60	discard	add smoothed target encodings of carrier/origin/dest	0.6814	N/A
+f1086d4	discard	signed days to nearest US holiday (calendar lookup)	0.6774	N/A
+58c5ef0	discard	max_depth 9	0.6742	N/A
+764f7c0	keep	max_depth 4	0.6845	0.6843
+492c0c4	discard	max_depth 3	0.6838	N/A
+d28759b	discard	Origin/Dest as target encodings instead of categoricals	0.6799	N/A
+05fdb9a	discard	1000 trees	0.6834	N/A
+82956e0	discard	300 trees	0.6842	N/A
+a4364a3	discard	interaction constraint: Month and DayofMonth cannot interact	0.6803	N/A
+40461d8	discard	add DayOfYear	0.6842	N/A
+5746222	keep	reg_lambda 10	0.6851	0.6849
+0710d1c	keep	reg_lambda 50	0.6856	0.6849
+ef901f3	discard	reg_lambda 200	0.6851	N/A
+1544ce8	keep	colsample_bytree 0.5	0.6857	0.6848
+5f2a0c8	keep	min_child_weight 30	0.6859	0.6849
+e5f0fcb	discard	min_child_weight 100	0.6854	N/A
+642436b	discard	max_cat_threshold 16	0.6854	N/A
+789d363	discard	max_cat_threshold 283	0.6851	N/A
+3157d0f	discard	add Route (Origin-Dest) categorical	0.6823	N/A
+23e3abb	discard	add Carrier-Origin categorical	0.6843	N/A
+ee47978	discard	drop CRSDepTime and Hour (keep DepMinutes only)	0.6856	N/A
+971b01c	keep	num_parallel_tree 4	0.6860	0.6851
+7134c8d	discard	subsample 0.5	0.6858	N/A
+6f6babd	discard	colsample_bynode 0.5 instead of colsample_bytree 0.5	0.6851	N/A
+f2d3f7b	keep	max_depth 5 (with lambda 50, mcw 30)	0.6863	0.6855
+618ad9b	keep	max_depth 6	0.6864	0.6854
+fa8d26e	discard	reg_lambda 200 at depth 6	0.6861	N/A
+a7db5cd	discard	gamma 1.0	0.6863	N/A
+16ab378	discard	random NaN-masking of categoricals in training (unseen levels)	0.6859	N/A
+29ab027	discard	Month and DayOfWeek additionally as categoricals (equal AUC, not simpler)	0.6864	N/A
+33668aa	discard	lr 0.015 with 1000 rounds	0.6862	N/A
+f2eb67f	keep	lossguide growth, max_leaves 32, max_depth 8	0.6865	0.6854
+489212b	keep	max_leaves 20, max_depth 10	0.6868	0.6858
+8868f47	discard	max_leaves 12	0.6864	N/A
+ea3215d	discard	blend of ordinal-calendar and categorical-calendar models	0.6861	N/A
+fae2e84	discard	max_bin 64 (equal AUC, not simpler or faster)	0.6868	N/A
+724d63d	discard	max_cat_to_onehot 21 (one-hot carrier splits)	0.6856	N/A
+5f2f9ce	discard	drop UniqueCarrier	0.6814	N/A
+658e979	keep	add Minute of the hour	0.6870	0.6862
+f207279	keep	add HourOfWeek	0.6873	0.6862
+f635f48	keep	add MonthHour	0.6876	0.6866
+35f5ae4	discard	add MonthDow	0.6871	N/A
+eb6d4df	discard	add HourDow (hour-major hour x weekday axis)	0.6872	N/A
+d10687e	crash	add approximate arrival time (KeyError: used DepMinutes before it was created)	0.0000	N/A
+e7c3ebb	discard	add approximate arrival time (fixed)	0.6875	N/A
+c7799dd	discard	colsample_bytree 0.4	0.6874	N/A
+b23b304	discard	700 rounds	0.6873	N/A
+a8f31b7	discard	350 rounds	0.6873	N/A
+ec4b350	discard	drop CRSDepTime (redundant)	0.6873	N/A
+dd5fe6e	discard	num_parallel_tree 8	0.6873	N/A
+1cab6f4	discard	add CarrierHour (carrier rank x hour)	0.6869	N/A
+e339794	discard	min_child_weight 15 (equal AUC, not simpler)	0.6876	N/A
+92e246e	discard	min_child_weight 60	0.6875	N/A
+1dffe72	discard	add HalfMonthHour	0.6871	N/A
+6080416	keep	reg_lambda 25	0.6879	0.6869
+bf1e46a	discard	reg_lambda 12	0.6877	N/A
+9d1c66f	discard	max_leaves 24	0.6877	N/A
+366c60f	discard	subsample 0.7	0.6876	N/A
+a9846e6	discard	subsample 0.9	0.6878	N/A
