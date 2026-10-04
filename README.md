@@ -4,14 +4,14 @@
 
 This is a follow-up to [xgboost-autoresearch](https://github.com/szilard/xgboost-autoresearch): a minimal, self-contained setup for a single run. It is an adaptation of A. Karpathy's [autoresearch](https://github.com/karpathy/autoresearch) project to XGBoost.
 
-The idea: give an AI agent a small but real XGBoost training setup and let it experiment autonomously for a fixed time budget (2 hours). It modifies the code, trains, checks if the result improved, keeps or discards, and repeats. When the time is up it stops, and you get a log of experiments and (hopefully) a better model. The core idea is that you're not touching any of the Python files like you normally would as a researcher. Instead, you are programming the `program.md` markdown file that provides context to the AI agent and sets up your autonomous research org.
+The idea: give an AI agent a small but real XGBoost training setup and let it experiment autonomously for a fixed time budget (1 hour). It modifies the code, trains, checks if the result improved, keeps or discards, and repeats. When the time is up it stops, and you get a log of experiments and (hopefully) a better model. The core idea is that you're not touching any of the Python files like you normally would as a researcher. Instead, you are programming the `program.md` markdown file that provides context to the AI agent and sets up your autonomous research org.
 
 ## How a run works
 
 The agent's instructions are in `program.md`:
 
 - **Task:** predict whether a flight departs 15+ minutes late (airline data, balanced, 200K train rows from 2005 / 50K eval and 50K holdout rows from 2006), measured by AUC. The agent optimizes AUC on the eval set; the holdout set is scored only after the run.
-- **Loop:** for a fixed 2-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved (or is unchanged with simpler code) and resets it otherwise. It also researches ideas on the web and logs every experiment in `output/results.tsv` and `output/research-log.md`.
+- **Loop:** for a fixed 1-hour budget, the agent edits `train.py` (data prep, feature engineering, hyperparameters, model training), commits, runs it via `harness.py`, and keeps the commit if eval AUC improved (or is unchanged with simpler code) and resets it otherwise. It also researches ideas on the web and logs every experiment in `output/results.tsv` and `output/research-log.md`.
 - **Guardrails:** `harness.py` enforces time limits (1 min training, 5 min evaluation per run). Evaluation calls the agent's feature code on one row at a time, so features computed across rows (counts, group means) don't carry over to scoring. The holdout set and the human-only scripts in `human/` (data prep, holdout scoring) are off-limits to the agent.
 - **Holdout check:** after the run, you score every kept model on the holdout set to check that the eval AUC gains generalize (`output/holdout_scores.tsv`, `output/auc_history.png`).
 
@@ -46,7 +46,7 @@ Hi have a look at program.md and let's kick off a new experiment! let's do the s
 
 The `program.md` file is essentially a super lightweight "skill".
 
-After the setup the agent starts the clock (`python3 harness.py start`), runs experiments for 2 hours, then wraps up and stops the clock (`python3 harness.py stop`). If an agent forgets to stop, the clock keeps running and the report counts up to the moment you run it; run `python3 harness.py stop` yourself as soon as you notice, so the total stops growing.
+After the setup the agent starts the clock (`python3 harness.py start`), runs experiments for 1 hour, then wraps up and stops the clock (`python3 harness.py stop`). If an agent forgets to stop, the clock keeps running and the report counts up to the moment you run it; run `python3 harness.py stop` yourself as soon as you notice, so the total stops growing.
 
 ## After the run
 

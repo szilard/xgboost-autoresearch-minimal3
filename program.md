@@ -12,12 +12,12 @@ To set up a new experiment, work with the user to:
 2. **Create the branch**: `git checkout -b <tag>`. Do this directly — do NOT run git checkout main or switch branches first. Branch from whatever HEAD is currently at.
 3. **Read the in-scope files**: The repo is small. Read these files for full context:
    - `train.py` - the file you modify. Data preparation, feature engineering, choosing hyperparameters and model training.
-   - `harness.py` - runs and times the experiments, keeps the 2-hour experiment clock, saves the trained model and `prepare` to `artifacts/` and scores `eval.csv` row by row. Do not modify.
+   - `harness.py` - runs and times the experiments, keeps the 1-hour experiment clock, saves the trained model and `prepare` to `artifacts/` and scores `eval.csv` row by row. Do not modify.
 4. **Verify data exists**: Check that `data/train.csv` and `data/eval.csv` exist (`ls data/train.csv data/eval.csv`; do not list the whole `data/` folder). If not, tell the human.
 5. **Initialize results.tsv**: All outputs of the run go in the `output/` folder (create it if it does not exist). Create `output/results.tsv` with just the header row. The baseline will be recorded after the first run.
 6. **Confirm and go**: Confirm setup looks good.
 
-Once you get confirmation, start the experiment clock with `python3 harness.py start` as your very first action, then kick off the experimentation. From then on you have a **time budget of 2 hours** of wall-clock time, see **Time budget** below.
+Once you get confirmation, start the experiment clock with `python3 harness.py start` as your very first action, then kick off the experimentation. From then on you have a **time budget of 1 hour** of wall-clock time, see **Time budget** below.
 
 ## Experimentation
 
@@ -62,7 +62,7 @@ You are expected to actively search the web and read external resources througho
 - Don't blindly copy — adapt what you read to this specific dataset and problem
 - If a source suggests a technique, understand *why* it works before implementing it
 
-**Important:** Research time does not count against the per-run time limits (it does count against the 2-hour time budget). Take as long as you need to read and understand a resource before designing your next experiment. A well-researched experiment is worth more than three random ones.
+**Important:** Research time does not count against the per-run time limits (it does count against the 1-hour time budget). Take as long as you need to read and understand a resource before designing your next experiment. A well-researched experiment is worth more than three random ones.
 
 **The goal is simple: get the highest AUC.** Everything is fair game that will lead to a model that generalizes on unseen data: data preparation, feature engineering, choosing hyperparameters, and model training. Read XGBoost documentation online, search the web for how to tune XGBoost. Be creative! Beyond the rules above, the only constraint is that the code runs without crashing and stays within the time limits (see **Timeout**).
 
@@ -208,7 +208,7 @@ The idea is that you are a completely autonomous researcher trying things out. I
 
 **Crashes**: If a run crashes (OOM, a bug, etc.), use your judgment: If it's something dumb and easy to fix (e.g. a typo, a missing import), fix it and re-run. If the idea itself is fundamentally broken, just skip it, log "crash" as the status in the tsv, and move on.
 
-**Time budget**: You have 2 hours of wall-clock time from `python3 harness.py start`, counting everything: thinking, research, editing and runs. Within the budget, do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to keep working until the budget is used up. You are autonomous. If you run out of ideas, think harder - read papers and documentation, re-read the in-scope files for new angles, try combining previous near-misses, try more radical changes to the features or the model setup. Do not wrap up or stop the clock while 2 minutes or more remain.
+**Time budget**: You have 1 hour of wall-clock time from `python3 harness.py start`, counting everything: thinking, research, editing and runs. Within the budget, do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to keep working until the budget is used up. You are autonomous. If you run out of ideas, think harder - read papers and documentation, re-read the in-scope files for new angles, try combining previous near-misses, try more radical changes to the features or the model setup. Do not wrap up or stop the clock while 2 minutes or more remain.
 
 When `python3 harness.py status` (or `python3 harness.py run`) prints `TIME IS UP`, or less than 2 minutes remain (too short for another experiment: your thinking, the edit and the run), do not start new experiments. Wrap up:
 
@@ -216,4 +216,4 @@ When `python3 harness.py status` (or `python3 harness.py run`) prints `TIME IS U
 2. Add a final summary to `output/research-log.md`: best Eval AUC and its commit, what worked, what did not, and what you would try next.
 3. Run `python3 harness.py stop` as your very last action, then stop. Leave the `output/` folder as it is: the human archives it after the run.
 
-A run of the starter takes ~30s, most of it evaluation; with your own time for thinking, research and editing, that is roughly 2 minutes per experiment, or approx 50-60 experiments in the 2 hours.
+A run of the starter takes ~30s, most of it evaluation; with your own time for thinking, research and editing, that is roughly 1-2 minutes per experiment, or approx 30-60 experiments in the hour.
