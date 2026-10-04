@@ -1,0 +1,147 @@
+commit	status	description	eval_auc	holdout_auc
+2e14489	keep	baseline	0.6743	0.6725
+dfbb64f	keep	Month/DayofMonth/DayOfWeek as ordinal ints + Hour feature	0.6754	0.6774
+d408615	keep	600 trees lr 0.05, subsample 0.8, colsample_bytree 0.8, min_child_weight 5	0.6772	0.6762
+9af3313	keep	replace native categoricals (carrier/origin/dest) with smoothed target encoding fitted on train	0.6805	0.6782
+4b5fcdc	discard	add in-sample target encodings of route, carrier-origin, carrier-dest (label leakage on small groups)	0.6705	N/A
+555a9a9	discard	out-of-fold (5-fold) target encodings for carrier/origin/dest + route, carrier-origin, carrier-dest	0.6794	N/A
+97b40cf	discard	out-of-fold target encodings, carrier/origin/dest only (isolates OOF effect)	0.6777	N/A
+8dab9dc	keep	in-sample encodings for carrier/origin/dest + out-of-fold encodings for route, carrier-origin, carrier-dest	0.6817	0.6806
+021b693	discard	drop DayofMonth (plus speed refactor of key building)	0.6782	N/A
+cdd9e1a	discard	add signed days to nearest US holiday, year inferred from weekday (plus speed refactor)	0.6791	N/A
+be18fc7	keep	pure speed refactor of key building in fit_te (training 48s -> 4s), same AUC as 8dab9dc	0.6817	0.6806
+ca48e1c	keep	max_depth 6 -> 4 (equal AUC, simpler model)	0.6820	0.6806
+32082f0	discard	1500 trees instead of 600 at depth 4	0.6802	N/A
+db5bdd9	discard	300 trees instead of 600 at depth 4	0.6810	N/A
+6d59e7f	discard	noise calibration: same config as ca48e1c with random_state 7 (seed noise ~0.0005)	0.6825	N/A
+8df8f7e	keep	replace DayofMonth by signed days to nearest US holiday clipped to +-8 (year inferred from weekday)	0.6832	0.6814
+41c1a08	discard	add OOF delay rates of origin-hour, dest-hour, carrier-hour (+0.0006 = noise, slower eval)	0.6838	N/A
+823c523	keep	ablation: drop Month as a feature (equal AUC, simpler)	0.6831	0.6797
+a4153d6	discard	recency sample weights (weight = month number)	0.6803	N/A
+d361d1d	keep	ablation: no pair encodings (-0.0006 = noise; allows removing the OOF machinery)	0.6825	0.6791
+df864be	keep	cleanup: remove unused OOF/pair code, prepare rewritten compactly (same features as d361d1d)	0.6830	0.6794
+f85c901	discard	monotone increasing constraints on carrier/origin/dest delay-rate codes	0.6750	N/A
+cda6926	discard	min_child_weight 5 -> 50 (+0.0003 = noise)	0.6833	N/A
+63e23d0	keep	ablation: drop Hour, redundant with CRSDepTime (equal AUC, simpler)	0.6829	0.6794
+138866d	discard	num_parallel_tree 4 (+0.0003 = noise, 4x training)	0.6832	N/A
+09c9b46	keep	HolidayDist clipped to +-4 instead of +-8	0.6837	0.6802
+8b09a46	discard	HolidayDist clipped to +-2 (-0.0003 vs +-4)	0.6834	N/A
+dfba61b	discard	unseen categories encoded as global delay rate instead of NaN (no change)	0.6836	N/A
+f47f7da	keep	max_depth 4 -> 6 on the reduced (date-free) feature set	0.6847	0.6812
+1209fab	discard	max_depth 8 (-0.0031 vs depth 6)	0.6816	N/A
+10cec75	keep	add minute within the hour (+0.0002; logged as discard at the time but NOT reset by mistake, so it stayed in all later commits; confirmed worth +0.0009 by ablation 98cd31f)	0.6849	0.6808
+e39b811	discard	absorb 2005 day-level shocks: daily delay rate feature for 2005 rows, global rate for other years	0.6793	N/A
+620899b	discard	restrict holiday list to six big travel holidays (-0.0009)	0.6838	N/A
+274bb5a	keep	add HolidayId: which holiday is within +-4 days (-1 none)	0.6863	0.6828
+9dd2084	keep	cleanup of HolidayId mapping: late December before New Year gets the New Year id (equal AUC, cleaner)	0.6861	0.6829
+5cbb8dc	discard	holiday window +-7 instead of +-4 (-0.0013)	0.6848	N/A
+7cda060	keep	add mean flight distance per origin and per dest (fitted on train)	0.6872	0.6840
+eb3b4b4	discard	mean flight distance per carrier as well (no gain)	0.6870	N/A
+864d583	discard	add airport map coordinates recovered from route distances via Isomap/classical MDS (+0.0003 = noise, 12 lines)	0.6875	N/A
+6cef6b8	discard	add approximate scheduled arrival time (+0.0002 = noise)	0.6874	N/A
+736a6ef	discard	leaf-wise growth: grow_policy lossguide, max_leaves 40, max_depth 10 (equal)	0.6871	N/A
+366031b	crash	day-level offset (base_margin) in training: NameError, helper from a discarded commit	0.0000	N/A
+214a9dd	discard	train with logit of the 2005 day delay rate as base_margin on non-holiday days (absorbs weekday effect too)	0.6840	N/A
+981f794	discard	day-shock offset relative to the weekday level as training base_margin (+0.0006 = noise, 8 lines)	0.6878	N/A
+57bdccb	discard	DART booster rate_drop 0.1, 300 trees lr 0.1 (-0.0036, 8x training time)	0.6836	N/A
+14c9f0b	discard	add coarse season DJF/MAM/JJA/SON (-0.0039)	0.6833	N/A
+1851606	discard	add CRSDepTime minus route median departure time (no gain)	0.6868	N/A
+5c2a4fa	discard	carrier additionally as native categorical (-0.0036)	0.6836	N/A
+e2cd01e	discard	ablation: drop the carrier delay-rate code (-0.0055)	0.6817	N/A
+c3cca38	discard	max_bin 32 (equal, extra parameter)	0.6871	N/A
+181b94c	discard	remove subsample/colsample_bytree/min_child_weight (defaults): -0.0018	0.6854	N/A
+3e9183f	discard	subsample 0.5, colsample_bytree 0.5 (+0.0002 = noise)	0.6874	N/A
+b59ce66	keep	interaction constraints: holiday features interact only with DayOfWeek/CRSDepTime, not with carrier/airports/distance	0.6888	0.6859
+54ffd7f	keep	stricter constraints: holiday features interact only with each other (equal AUC, simpler model)	0.6887	0.6858
+829bcc8	discard	constraints: carrier may not interact with airports (-0.0004 = noise)	0.6883	N/A
+b4ba319	discard	Month as purely additive feature (own constraint group): -0.0027	0.6860	N/A
+bf2a2fa	discard	constraints: origin-side features may not interact with dest-side (-0.0003 = noise)	0.6884	N/A
+6e5d9ef	discard	constraints: weekday only in the calendar group, not with flight features (-0.0022)	0.6865	N/A
+b68e1b4	discard	holiday window +-7 with additive holiday effect (-0.0018)	0.6869	N/A
+b3b176c	discard	lr 0.025 with 1200 trees (+0.0004 = noise, double training)	0.6891	N/A
+e47a3de	discard	holiday id and holiday distance additive to each other (-0.0008)	0.6879	N/A
+1331269	discard	day-shock training offset on top of the constraints (+0.0002 = noise)	0.6889	N/A
+98cd31f	discard	ablation: remove Minute, which had stayed in since 10cec75 by mistake (-0.0009, so Minute stays)	0.6878	N/A
+60b940b	keep	list Minute explicitly as its own additive constraint group (identical model, clearer code)	0.6887	0.6858
+3ac2143	discard	add out-of-fold delay rate of the recurring flight slot (carrier, origin, dest, hour): -0.0045	0.6842	N/A
+5449ccd	discard	hour resolution for CRSDepTime in the flight block (-0.0003 = noise)	0.6884	N/A
+fe32d3f	keep	reg_lambda 30 (L2 on leaf weights)	0.6896	0.6865
+1d1869b	keep	reg_lambda 100	0.6901	0.6868
+e706812	discard	reg_lambda 300 (-0.0006 vs 100)	0.6895	N/A
+8fa5bbc	discard	max_depth 8 with reg_lambda 100 (-0.0007)	0.6894	N/A
+2eb7b1e	discard	1000 trees with reg_lambda 100 (-0.0002 = noise)	0.6899	N/A
+7217b71	keep	remove min_child_weight (default 1) under reg_lambda 100: equal AUC, one parameter fewer	0.6899	0.6868
+6f711a5	discard	Distance additive only (-0.0003 = noise)	0.6896	N/A
+7852e0d	discard	reg_alpha 10 on top of reg_lambda 100 (+0.0003 = noise)	0.6902	N/A
+d552cc3	discard	training-only monthly shock columns for carrier/origin/dest, 0 at prediction (-0.0052)	0.6847	N/A
+84adf4b	discard	ablation: drop origin/dest mean-distance features (-0.0010, so they stay)	0.6889	N/A
+ac6b8ab	discard	constraints: weekday interacts with time of day only (-0.0014)	0.6885	N/A
+0ed9a9c	discard	add hour of the week (+0.0001 = noise)	0.6900	N/A
+fa6b432	discard	add evening gap (late minus early delay rate) per origin/dest (-0.0007)	0.6892	N/A
+de46f82	discard	m_smooth 200 for the delay-rate codes (+0.0003 = noise)	0.6902	N/A
+61d8c8e	discard	carrier/origin/dest codes cross-fitted over quarters for training rows (-0.0056)	0.6843	N/A
+83d1052	discard	two-stage boosting: 200 additive rounds then 400 with flight-block interactions (-0.0003 = noise)	0.6896	N/A
+3dbc519	discard	add other-role carrier-airport delay rates, leak-free by construction (-0.0005 = noise)	0.6894	N/A
+43f294e	discard	remove subsample and colsample_bytree under reg_lambda 100 (-0.0017)	0.6882	N/A
+cfc4318	discard	constraints: carrier additive only (-0.0025)	0.6874	N/A
+9e62427	discard	gamma 2 (equal, extra parameter)	0.6899	N/A
+73d0c3c	discard	noise calibration of the final config: random_state 7 instead of 42 (0.6900 vs 0.6899)	0.6900	N/A
+e9a5b37	discard	Season as shape modifier in the flight block with the 2005 month level as training offset (-0.0017)	0.6882	N/A
+45887f8	discard	six big travel holidays only, with ids and additive fence (-0.0011)	0.6888	N/A
+a910864	discard	add std of flight distance per origin/dest (-0.0002 = noise)	0.6897	N/A
+c847b19	discard	down-weight training rows from extreme 2005 days (-0.0019)	0.6880	N/A
+661122e	discard	up-weight training rows from extreme 2005 days (equal). CORRECTION: logged as discard but NOT reset by mistake, so sample_weight stayed in every later commit (exp 91-133) until removed by 8e0078d	0.6898	N/A
+4fa9b71	discard	add departure time relative to the start of the carrier day at the origin (-0.0010)	0.6889	N/A
+7b1d91d	keep	ablation: 2005 holiday table for all rows, no year inference (+0.0005, simpler) [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6904	0.6866
+0521e90	keep	cleanup: single holiday table with 2005 dates, per-year lookup removed (identical AUC) [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6904	0.6866
+75f4cf9	keep	drop Easter from the fixed-date holiday table (equal AUC, removes a misaligned window) [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6905	0.6866
+de1bd6f	discard	ablation: drop Distance (-0.0010, so it stays)	0.6895	N/A
+8166843	discard	remove subsample only (-0.0007)	0.6898	N/A
+28679bf	keep	simplify: one HolidayDay feature (day of year inside +-4 holiday windows, else -1) replaces HolidayDist+HolidayId [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6908	0.6868
+1e4c32b	discard	plain group means as codes, no smoothing (-0.0004; simpler but single-row categories would get their own label as code)	0.6904	N/A
+749ab52	discard	holiday windows +-3 instead of +-4 (equal)	0.6907	N/A
+fb3444a	discard	two-day cells in the holiday windows (-0.0008)	0.6900	N/A
+d15ea7f	discard	constraints: destination features additive only (-0.0018)	0.6890	N/A
+2d9ad42	discard	max_depth 7 (-0.0007)	0.6901	N/A
+178b448	discard	colsample_bynode 0.8 instead of colsample_bytree 0.8 (equal)	0.6905	N/A
+1aa4747	discard	deep and slow: depth 12, lr 0.02, 400 trees (-0.0005 = noise)	0.6903	N/A
+8fcba57	discard	deep and slow: depth 16, lr 0.01, 1000 trees (-0.0018, training 20s)	0.6890	N/A
+1f0559f	discard	ablation: additive effect for every date instead of holiday windows only (-0.0075)	0.6833	N/A
+c778224	discard	ablation: no date feature at all (-0.0047: the value of the holiday windows)	0.6861	N/A
+e937122	discard	noise calibration of 28679bf: random_state 7 (0.6910 vs 0.6908; seed not kept)	0.6910	N/A
+e0d2431	discard	scale holiday-only trees by 0.6 after training via booster JSON (+0.0003 = noise, hacky)	0.6911	N/A
+215d917	discard	constraints: each entity interacts with the schedule only, Distance additive (-0.0024)	0.6884	N/A
+0f2bb58	discard	additive-only out-of-fold pair delay rates: route, carrier-origin, carrier-dest (-0.0012)	0.6896	N/A
+3b6b8fd	discard	reg_lambda 50, plateau re-check (-0.0003)	0.6905	N/A
+7d79b0b	discard	reg_lambda 200, plateau re-check (+0.0003 = noise)	0.6911	N/A
+d1f0c23	discard	constraints: Minute may interact with CRSDepTime (equal)	0.6907	N/A
+7fec6d2	discard	ablation: mean distance for the origin only (-0.0009, Dest_mean_dist stays)	0.6899	N/A
+a961572	discard	additive copy of the hour of day (+0.0003 = noise)	0.6911	N/A
+a3ba877	keep	combine near-misses: reg_lambda 200, lr 0.025 x 1200 trees, m_smooth 200, additive Hour (+0.0009) [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6917	0.6872
+dd23bd8	keep	ablation: combination without the additive Hour (equal, simpler) [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6917	0.6874
+ae5d32c	discard	ablation: m_smooth back to 20 in the combination (-0.0005, so 200 stays)	0.6912	N/A
+31418ab	discard	ablation: lr 0.05 x 600 trees in the combination (-0.0004, so 0.025 x 1200 stays)	0.6913	N/A
+0530df7	discard	second round: lr 0.0125 x 2400 trees, m_smooth 500, reg_alpha 10 (-0.0002 = noise, 2x training)	0.6915	N/A
+85adae1	discard	noise calibration of dd23bd8: random_state 7 (0.6916 vs 0.6917; seed not kept)	0.6916	N/A
+25cef5c	discard	max_depth 5 in the final regime (-0.0008)	0.6909	N/A
+fcffadf	discard	constraints: Minute may interact with the carrier (equal)	0.6916	N/A
+9c11824	discard	reg_lambda 400 (equal; plateau 100-400)	0.6916	N/A
+0a67a91	discard	ablation: alphabetical index instead of delay-rate order for carrier/origin/dest codes (-0.0022)	0.6895	N/A
+78fabeb	discard	codes ordered by excess delay rate over the hour-of-day expectation (-0.0003 = noise)	0.6914	N/A
+11b2616	discard	ablation: no interaction constraints in the final model (-0.0006; constraints stay)	0.6911	N/A
+0bf13bd	discard	ablation: default reg_lambda in the final model (-0.0016)	0.6901	N/A
+485a82f	keep	ablation: no Minute in the final model (-0.0002 = noise, simpler) [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6915	0.6873
+a4a9483	discard	ablation: no mean-distance features in the final model (-0.0010, they stay)	0.6905	N/A
+e7f219c	keep	ablation: no interaction constraints in the model without Minute (-0.0003 = noise, 5 config lines fewer) [model also contained the day sample weights of 661122e, left in by mistake; see log]	0.6912	0.6869
+430c48d	discard	ablation: no row/column sampling in the final model (-0.0019, sampling stays)	0.6893	N/A
+8e0078d	keep	remove the day sample weights that had stayed in since 661122e by mistake (0.6913 vs 0.6912 with them: equal, simpler)	0.6913	0.6869
+65129c7	keep	re-check on the clean model: holiday fence (interaction constraints) back, +0.0005 vs 8e0078d; reverses e7f219c	0.6918	0.6874
+a245d0f	discard	re-check on the clean model: additive Minute back (0.6917 vs 0.6918, equal; stays out)	0.6917	N/A
+3690ff5	discard	final-model ablation (clean, vs 65129c7 0.6918): no HolidayDay (-0.0047)	0.6871	N/A
+72e1163	discard	final-model ablation (clean): default reg_lambda (-0.0018)	0.6900	N/A
+313fa3a	discard	final-model ablation (clean): no mean-distance features (-0.0010)	0.6908	N/A
+5a0f024	discard	final-model ablation (clean): no Distance (-0.0006)	0.6912	N/A
+f4ac096	discard	final-model ablation (clean): no row/column sampling (-0.0016)	0.6902	N/A
+8c58ac5	discard	final-model ablation (clean): m_smooth 20 instead of 200 (-0.0003)	0.6915	N/A
+bfd4b8b	discard	noise calibration of the final commit 65129c7: random_state 7 (0.6915 vs 0.6918; seed not kept)	0.6915	N/A
+4a9d1be	discard	re-check on the clean model: lr 0.05 x 600 trees instead of 0.025 x 1200 (-0.0002 = noise; not a code simplification)	0.6916	N/A
