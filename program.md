@@ -13,7 +13,7 @@ To set up a new experiment, work with the user to:
 3. **Read the in-scope files**: The repo is small. Read these files for full context:
    - `train.py` - the file you modify. Data preparation, feature engineering, choosing hyperparameters and model training.
    - `harness.py` - runs and times the experiments, keeps the 2-hour experiment clock, saves the trained model and `prepare` to `artifacts/` and scores `eval.csv` row by row. Do not modify.
-4. **Verify data exists**: Check that `data/` contains `train.csv` and `eval.csv`. If not, tell the human.
+4. **Verify data exists**: Check that `data/train.csv` and `data/eval.csv` exist (`ls data/train.csv data/eval.csv`; do not list the whole `data/` folder). If not, tell the human.
 5. **Initialize results.tsv**: All outputs of the run go in the `output/` folder (create it if it does not exist). Create `output/results.tsv` with just the header row. The baseline will be recorded after the first run.
 6. **Confirm and go**: Confirm setup looks good.
 
@@ -25,6 +25,7 @@ You launch an experiment as: `python3 harness.py run`. It runs `train.py`, times
 
 **What you CAN do:**
 - Modify `train.py` - this is the only code file you edit (besides your own `output/results.tsv` and `output/research-log.md`). Everything is fair game that will lead to a model that generalizes on unseen data: data preparation, feature engineering, choosing hyperparameters, and model training. You can also implement new features such as early stopping etc.
+- Inspect `data/train.csv` with read-only scratch commands (e.g. `python3 -c ...`) to understand the data. Do not create other code files; everything that affects the model stays in `train.py`.
 - Search the web and read external resources. This is not optional — you MUST do research before relying solely on your own intuition. See the **Research** section below.
 
 **What you CANNOT do:**
@@ -198,7 +199,7 @@ LOOP until the time budget is used up:
 7. If the grep output is empty, the run crashed or timed out (or the time budget is used up). Run `tail -n 50 output/run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up on that idea and move on.
 8. Record the results in the tsv (NOTE: do not commit the results.tsv file, leave it untracked by git)
 9. If Eval AUC improved (higher), or stayed about equal with simpler code (see the **Simplicity criterion**), you "advance" the branch, keeping the git commit
-10. Otherwise (Eval AUC equal or worse, without a simplification), you discard it: `git reset --hard` back to the last kept commit (e.g. `git reset --hard HEAD~1`; the untracked `output/` folder is not affected)
+10. Otherwise (Eval AUC equal or worse, without a simplification), you discard it: `git reset --hard <hash of the last kept commit>` (the untracked `output/` folder is not affected), then check with `git log --oneline -1` that HEAD is that last kept commit
 11. **Every 10 experiments** (not counting the baseline), pause and briefly synthesize what you have learned so far: what kinds of changes help, what kinds do not, what your current best theory is about what matters on this dataset, and what direction to try next. Write this synthesis as a short section in `output/research-log.md` to inform subsequent experiments.
 
 The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
@@ -207,7 +208,7 @@ The idea is that you are a completely autonomous researcher trying things out. I
 
 **Crashes**: If a run crashes (OOM, a bug, etc.), use your judgment: If it's something dumb and easy to fix (e.g. a typo, a missing import), fix it and re-run. If the idea itself is fundamentally broken, just skip it, log "crash" as the status in the tsv, and move on.
 
-**Time budget**: You have 2 hours of wall-clock time from `python3 harness.py start`, counting everything: thinking, research, editing and runs. Within the budget, do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to keep working until the budget is used up. You are autonomous. If you run out of ideas, think harder - read papers and documentation, re-read the in-scope files for new angles, try combining previous near-misses, try more radical changes to the features or the model setup.
+**Time budget**: You have 2 hours of wall-clock time from `python3 harness.py start`, counting everything: thinking, research, editing and runs. Within the budget, do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to keep working until the budget is used up. You are autonomous. If you run out of ideas, think harder - read papers and documentation, re-read the in-scope files for new angles, try combining previous near-misses, try more radical changes to the features or the model setup. Do not wrap up or stop the clock while 2 minutes or more remain.
 
 When `python3 harness.py status` (or `python3 harness.py run`) prints `TIME IS UP`, or less than 2 minutes remain (too short for another experiment: your thinking, the edit and the run), do not start new experiments. Wrap up:
 
