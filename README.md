@@ -86,3 +86,5 @@ results/               - archived runs, one folder per run (human only)
 
 - **Single file to modify.** The only code the agent touches is `train.py`. This keeps the scope manageable and diffs reviewable.
 - **Self-contained.** No external dependencies beyond XGBoost, pandas (training and data prep), scikit-learn, cloudpickle and matplotlib (plot). No distributed training, no complex configs. The only network access needed is `human/make_data.py` reading the source data from S3 and the agent's web research.
+
+License: [MIT](LICENSE)
